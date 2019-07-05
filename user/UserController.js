@@ -39,5 +39,35 @@ router.get('/', function(req, res){
 });
 
 
+//Gets a single User from the database
+/*This notation means that it’s a placeholder for a query parameter, a simple value, which will be sent along with the request. The value passed to '/:id' will be accessible through the req.params object. Where the name of the query parameter will get mapped to a property with the same name on the req.params object.
+
+Moving on, Mongoose has an awesome method called .findById which will only want the ID by which it will return a user. The ID is the first parameter and the callback function is the second. Can you see a pattern emerging? All of the Mongoose methods want a value as a first parameter and a callback function as the last. This callback will be called after the database has returned the queried value. */
+router.get('/:id', function(req, res){
+    User.findById(req.params.id, function(err, user){
+        if(err) return res.status(500).send("There was a problem finding the user with id ");
+        if(!user)return res.status(404).send("No user found");
+        res.status(200).send(user);
+    });
+});
+
+
+//Delete a user from the database
+router.delete("/:id", function(req, res){
+    User.findByIdAndRemove(req.params.id, function(err,user){
+        if(err) return res.status(500).send("There was a problem deleting the user");
+        res.status(200).send("User " + user.name + " was deleted");
+    });
+});
+
+//updating an existing user in the database
+//https://hackernoon.com/restful-api-design-with-node-js-26ccf66eab09 the update section.
+router.put('/:id', function(req, res){
+    User.findByIdAndUpdate(req.param.id, req.body, {new:true}, function(err, user){
+        if(err) return res.status(500).send("There was a problem updating the user.");
+        res.status(200).send(user);
+        console.log(user)
+    });
+});
 
 module.exports = router;
